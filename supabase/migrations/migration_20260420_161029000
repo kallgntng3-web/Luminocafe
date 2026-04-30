@@ -1,0 +1,25 @@
+-- Drop existing policy that might be too restrictive
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+
+-- Create better policy for viewing own profile
+CREATE POLICY "Users can view own profile" 
+ON profiles 
+FOR SELECT 
+TO authenticated 
+USING (id = auth.uid());
+
+-- Also allow users to view their own profile for updates
+CREATE POLICY "Users can update own profile" 
+ON profiles 
+FOR UPDATE 
+TO authenticated 
+USING (id = auth.uid());
+
+-- Admins can view all profiles
+CREATE POLICY "Admins can view all profiles" 
+ON profiles 
+FOR SELECT 
+TO authenticated 
+USING (
+  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true)
+);

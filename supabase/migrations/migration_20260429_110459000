@@ -1,0 +1,11 @@
+
+-- Add About/Story section fields to website_settings
+ALTER TABLE website_settings
+  ADD COLUMN IF NOT EXISTS about_title text DEFAULT 'Our Story',
+  ADD COLUMN IF NOT EXISTS about_subtitle text DEFAULT 'More than just coffee',
+  ADD COLUMN IF NOT EXISTS about_text text DEFAULT 'Lumino Cafe lahir dari kecintaan mendalam terhadap kopi berkualitas dan keinginan menciptakan ruang yang menginspirasi. Setiap cangkir yang kami sajikan adalah hasil dari perjalanan panjang—dari pemilihan biji kopi terbaik hingga proses roasting yang sempurna oleh tangan-tangan terampil kami.',
+  ADD COLUMN IF NOT EXISTS about_image_url text DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS stats_years text DEFAULT '5+',
+  ADD COLUMN IF NOT EXISTS stats_cups text DEFAULT '50K+',
+  ADD COLUMN IF NOT EXISTS stats_blends text DEFAULT '20+',
+  ADD COLUMN IF NOT EXISTS stats_rating text DEFAULT '4.9';

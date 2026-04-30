@@ -1,0 +1,60 @@
+-- Create admin user function
+CREATE OR REPLACE FUNCTION create_admin_user(
+  admin_email text,
+  admin_password text
+)
+RETURNS void AS $$
+DECLARE
+  new_user_id uuid;
+BEGIN
+  -- Insert user into auth.users
+  INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    created_at,
+    updated_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    is_super_admin,
+    confirmation_token,
+    email_change_token_new,
+    recovery_token
+  )
+  VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    gen_random_uuid(),
+    'authenticated',
+    'authenticated',
+    admin_email,
+    crypt(admin_password, gen_salt('bf')),
+    now(),
+    now(),
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{}',
+    false,
+    '',
+    '',
+    ''
+  )
+  RETURNING id INTO new_user_id;
+
+  -- Update profile to make admin
+  UPDATE profiles
+  SET is_admin = true
+  WHERE id = new_user_id;
+
+  RAISE NOTICE 'Admin user created successfully with ID: %', new_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create the admin user
+SELECT create_admin_user('namahaikal8@gmail.com', 'Haikal123');
+
+-- Drop the function after use (cleanup)
+DROP FUNCTION create_admin_user(text, text);

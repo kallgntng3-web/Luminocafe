@@ -1,0 +1,85 @@
+-- Create website_settings table (singleton pattern)
+CREATE TABLE website_settings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_name text DEFAULT 'Lumino Cafe',
+  business_tagline text DEFAULT 'Premium Coffee House',
+  business_description text,
+  address text,
+  phone text,
+  email text,
+  instagram_url text,
+  facebook_url text,
+  latitude decimal(10, 8),
+  longitude decimal(11, 8),
+  opening_hours text,
+  google_maps_api_key text,
+  updated_at timestamptz DEFAULT now()
+);
+
+-- Create hero_section table (singleton pattern)
+CREATE TABLE hero_section (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  badge_text text DEFAULT 'Premium Coffee Experience',
+  main_title text DEFAULT 'Welcome to Lumino Cafe',
+  subtitle text DEFAULT 'Tempat sempurna untuk menikmati kopi berkualitas tinggi dengan suasana yang nyaman',
+  cta_primary_text text DEFAULT 'Lihat Menu',
+  cta_secondary_text text DEFAULT 'Reservasi Sekarang',
+  updated_at timestamptz DEFAULT now()
+);
+
+-- Create all_you_can_drink table (singleton pattern)
+CREATE TABLE all_you_can_drink (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  price decimal(10, 2) DEFAULT 50000,
+  features jsonb DEFAULT '["Unlimited Coffee & Espresso Based Drinks", "Unlimited Non-Coffee Beverages", "Unlimited Tea Selection", "Free Refill on All Drinks", "Cozy & Comfortable Space", "Fast WiFi Connection", "Instagram-Worthy Interior", "Friendly Staff Service"]'::jsonb,
+  terms jsonb DEFAULT '["Minimum 2 hours duration", "No outside food & beverages allowed", "Reservation recommended for groups", "Subject to seat availability"]'::jsonb,
+  duration_info text DEFAULT 'Available daily from 10:00 - 23:00',
+  contact_info text DEFAULT 'For more information, contact us at 08xxxxxxx',
+  updated_at timestamptz DEFAULT now()
+);
+
+-- Enable RLS
+ALTER TABLE website_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE hero_section ENABLE ROW LEVEL SECURITY;
+ALTER TABLE all_you_can_drink ENABLE ROW LEVEL SECURITY;
+
+-- Public can read
+CREATE POLICY "Public can view website settings" ON website_settings FOR SELECT USING (true);
+CREATE POLICY "Public can view hero section" ON hero_section FOR SELECT USING (true);
+CREATE POLICY "Public can view aycd" ON all_you_can_drink FOR SELECT USING (true);
+
+-- Admins can update (no insert/delete - singleton)
+CREATE POLICY "Admins can update website settings" ON website_settings FOR UPDATE 
+USING (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Admins can update hero section" ON hero_section FOR UPDATE 
+USING (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Admins can update aycd" ON all_you_can_drink FOR UPDATE 
+USING (auth.uid() IS NOT NULL);
+
+-- Insert default data (one row each)
+INSERT INTO website_settings (
+  business_name,
+  business_tagline,
+  business_description,
+  address,
+  phone,
+  email,
+  instagram_url,
+  facebook_url,
+  opening_hours
+) VALUES (
+  'Lumino Cafe',
+  'Premium Coffee House',
+  'Tempat sempurna untuk menikmati kopi berkualitas tinggi dengan suasana yang nyaman dan modern.',
+  'Jl. Contoh No. 123, Jakarta Selatan, 12345',
+  '+62 812-3456-7890',
+  'hello@luminocafe.com',
+  'https://instagram.com/luminocafe',
+  'https://facebook.com/luminocafe',
+  '09:00 - 22:00 WIB'
+);
+
+INSERT INTO hero_section DEFAULT VALUES;
+INSERT INTO all_you_can_drink DEFAULT VALUES;
