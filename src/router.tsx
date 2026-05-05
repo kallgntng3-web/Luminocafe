@@ -64,19 +64,19 @@ export const routers = [
       element: <DownloadPage />,
     },
     {
-      path: "/admin/login",
-      name: 'admin-login',
-      element: <AdminLogin />,
+     path: "/admin",
+     name: 'admin-login',
+     element: <AdminLogin />,
+    },
+    {
+    path: "/admin/dashboard",
+    name: 'admin-dashboard',
+    element: <ProtectedRoute><AdminDashboard /></ProtectedRoute>,
     },
     {
       path: "/admin/signup",
       name: 'admin-signup',
       element: <AdminSignup />,
-    },
-    {
-      path: "/admin",
-      name: 'admin-dashboard',
-      element: <ProtectedRoute><AdminDashboard /></ProtectedRoute>,
     },
     {
       path: "/admin/menu",
